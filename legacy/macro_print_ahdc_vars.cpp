@@ -4,22 +4,22 @@ void macro_print_ahdc_vars()
 
         TNtuple* ntuple = (TNtuple*) f->Get("clas12");
 
-        TH1F* h_maxadc = new TH1F("h_maxadc", "", 100, 0, 50*10E2);
+        TH1F* h_sumadc = new TH1F("h_sumadc", "", 100, 0, 50*10E2);
         TH1F* h_let    = new TH1F("h_let"   , "", 100, 0, 1000);
         TH1F* h_tot    = new TH1F("h_tot"   , "", 100, -100, 700);
 
-        ntuple->Project("h_maxadc", "AHDC_maxADC"           , "");
+        ntuple->Project("h_sumadc", "AHDC_sumadc"           , "");
         ntuple->Project("h_let"   , "AHDC_leadingEdgeTime"  , "");
         ntuple->Project("h_tot"   , "AHDC_timeOverThreshold", "");
 
-        h_maxadc->SetTitle(";max ADC;");
+        h_sumadc->SetTitle(";max ADC;");
         h_let->SetTitle(";Leading edge time (ns);");
         h_tot->SetTitle(";Time over threshold (ns);");
 
         TCanvas* c = new TCanvas("","",800,600);
-        h_maxadc->Draw();
+        h_sumadc->Draw();
         gPad->SetLogy(1);
-        c->Print("./plots/maxadc.pdf");
+        c->Print("./plots/sumadc.pdf");
         
         h_let->Draw();
         gPad->SetLogy(0);

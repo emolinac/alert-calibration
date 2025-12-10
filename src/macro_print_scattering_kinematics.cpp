@@ -5,8 +5,8 @@ void macro_print_scattering_kinematics()
         TNtuple* ntuple = (TNtuple*) f->Get("ntuple_electron");
 
         TH1F* h_Q2 = new TH1F("h_Q2","",500,-0.1,1);
-        TH1F* h_x  = new TH1F("h_x" ,"",500,0,1);
-        TH1F* h_W  = new TH1F("h_W" ,"",500,0,6); 
+        TH1F* h_x  = new TH1F("h_x" ,"",500,0,3);
+        TH1F* h_W  = new TH1F("h_W" ,"",500,0.9,1.5); 
 
         ntuple->Project("h_Q2" , "Q2");
         ntuple->Project("h_x"  , "x" );
