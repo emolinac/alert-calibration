@@ -2,11 +2,11 @@
 
 void macro_ntuple_elastics()
 {        
-        TFile* fin  = new TFile("../input-files/022994.root");
+        TFile* fin  = new TFile("../../022994/022994.root");
         TFile* fout = new TFile("../output-files/ntuple_elastics_D2_022994.root","RECREATE");
         gROOT->cd();
 
-        TNtuple* ntuple_elastics = new TNtuple("ntuple_elastics","","ahdc_trackid:ahdc_kftrackid:ahdc_component:ahdc_sumadc:ahdc_leadingEdgeTime:ahdc_timeOverThreshold:ahdc_kftrackdedx:ahdc_kftrackpath:electron_pt:electron_theta:Q2:W:delta_phi");
+        TNtuple* ntuple_elastics = new TNtuple("ntuple_elastics","","ahdc_trackid:ahdc_kftrackid:ahdc_component:ahdc_layer:ahdc_superlayer:ahdc_sumadc:ahdc_leadingEdgeTime:ahdc_timeOverThreshold:ahdc_kftrackdedx:ahdc_kftrackpath:electron_pt:electron_theta:Q2:W:delta_phi");
         TNtuple* ntuple_electron = new TNtuple("ntuple_electron","","electron_energy:electron_pt:electron_theta:Q2:x:W:is_elastic");
 
         TTree* clas12 = (TTree*) fin->Get("clas12");
@@ -15,6 +15,7 @@ void macro_ntuple_elastics()
         int   ahdc_trackid[maxahdcadc];
 	int   ahdc_wire[maxahdcadc];
 	int   ahdc_layer[maxahdcadc];
+	int   ahdc_superlayer[maxahdcadc];
 	float ahdc_time[maxahdcadc];
 
         int   ahdc_kftrackid[maxkftracks];
@@ -55,6 +56,7 @@ void macro_ntuple_elastics()
 	clas12->SetBranchAddress("ahdc_trackid",   ahdc_trackid);
 	clas12->SetBranchAddress("ahdc_wire",      ahdc_wire);
 	clas12->SetBranchAddress("ahdc_layer",     ahdc_layer);
+	clas12->SetBranchAddress("ahdc_superlayer",ahdc_superlayer);
 	clas12->SetBranchAddress("ahdc_time",      ahdc_time);
 
         clas12->SetBranchAddress("ahdc_nkftracks",    &nkftracks);
@@ -145,19 +147,24 @@ void macro_ntuple_elastics()
                         if (std::abs(TMath::RadToDeg() * p_electron->DeltaPhi(*p_kftrack)) < 170.)
                                 continue;
 
-                        if (ahdc_trackid[j] != ahdc_kftrackid[j])
+                        if (ahdc_trackid[j] < 0)
                                 continue;
 
-                        // loop over adc bank
-                        for(int k = 0 ; k <= nahdcrows ; k++) {
+                        // loop over adc bank to select wires matched to reco-level bank
+                        for(int k = 0 ; k < nahdcrows ; k++) {
                                 if (ahdc_wire[j] == ahdc_adc_component[k] && ahdc_adc_wfType[k] == 0) {
-                                        ntuple_elastics->Fill(ahdc_trackid[j], ahdc_kftrackid[j], ahdc_adc_component[k], ahdc_adc_sumadc[k], ahdc_adc_leadingEdgeTime[k], ahdc_adc_timeOverThreshold[k], ahdc_kftrackdedx[j], 
-                                                              ahdc_kftrackpath[j], p_electron->Pt(), electron_theta * TMath::RadToDeg(), Q2, W, p_electron->DeltaPhi(*p_kftrack) * TMath::RadToDeg());
+                                        //  loop over hits bank to get all the cables info
+                                        for (int l = 0 ; l < n_ahdcrecohits ; l++) {
+                                                ntuple_elastics->Fill(ahdc_trackid[l], ahdc_kftrackid[j], ahdc_wire[l], ahdc_layer[l], ahdc_superlayer[l], ahdc_adc_sumadc[k], ahdc_adc_leadingEdgeTime[k], ahdc_adc_timeOverThreshold[k], ahdc_kftrackdedx[j], 
+                                                                      ahdc_kftrackpath[j], p_electron->Pt(), electron_theta * TMath::RadToDeg(), Q2, W, p_electron->DeltaPhi(*p_kftrack) * TMath::RadToDeg());
+                                        }
                                 }
                         }
                 }
 
-                ntuple_electron->Fill(electron_energy_final, p_electron->Pt(), electron_theta, Q2, x, W, is_elastic);
+                // 1 - ensure track association
+                // 2 - ensure associated track a good wf and cable matching between adc and reco level
+                // 3 - 
 
                 p_electron->SetXYZ(-999,-999,-999);
                 p_kftrack->SetXYZ(-999,-999,-999);
@@ -165,6 +172,6 @@ void macro_ntuple_elastics()
 
         fout->cd();
         ntuple_elastics->Write();
-        ntuple_electron->Write();
+        // ntuple_electron->Write();
         gROOT->cd();
 }
