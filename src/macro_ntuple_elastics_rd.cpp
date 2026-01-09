@@ -1,9 +1,9 @@
 #include "../include/constants.h"
 
-void macro_ntuple_elastics()
+void macro_ntuple_elastics_rd()
 {        
         TFile* fin  = new TFile("../../input-files/022994/022994.root");
-        TFile* fout = new TFile("../output-files/ntuple_elastics_D2_022994.root","RECREATE");
+        TFile* fout = new TFile("../output-files/ntuple_elastics_D2_022994_rdalgo.root","RECREATE");
         gROOT->cd();
 
         TNtuple* ntuple_elastics = new TNtuple("ntuple_elastics","","ahdc_trackid:ahdc_kftrackid:ahdc_component:ahdc_layer:ahdc_superlayer:ahdc_sumadc:ahdc_leadingEdgeTime:ahdc_timeOverThreshold:ahdc_kftrackdedx:ahdc_kftrackpath:electron_pt:electron_theta:Q2:W:delta_phi");
@@ -116,38 +116,35 @@ void macro_ntuple_elastics()
                 double x = Q2 / 2. / (mass_target * (beam_energy - electron_energy_final));
 
                 double W = std::sqrt(Q2 * (1. - x) / x + std::pow(mass_target, 2));
-                
-                for (int i = 0 ; i < nahdcrows ; i++) {
-                        for(int j = 0 ; j < n_ahdcrecohits ; j++) {
-                                if (ahdc_adc_component[i] != ahdc_wire[j])
+
+                for (int i = 0 ; i < nkftracks ; i++) {
+                        p_kftrack->SetXYZ(ahdc_kftrackpx[i], ahdc_kftrackpy[i], ahdc_kftrackpz[i]);
+
+                        if (std::isnan(ahdc_kftrackpx[i]))
+                                continue;
+
+                        if (p_kftrack->Theta() < theta_min)
+                                continue;
+
+                        if (std::abs(TMath::RadToDeg() * p_electron->DeltaPhi(*p_kftrack)) < 170.)
+                                continue;
+
+                        //  Check the hit list
+                        for (int j = 0 ; j < n_ahdcrecohits ; j++) {
+                                if (ahdc_trackid[j] == 1)
                                         continue;
 
-                                if (ahdc_adc_wfType[i] != 0)
-                                        continue;
-
-                                if (ahdc_trackid[j] != 1)
-                                        continue;
-
-                                for (int k = 0 ; k < nkftracks ; k++) {
-                                        if (ahdc_trackid[j] != ahdc_kftrackid[k])
+                                for (int k = 0 ; k < nahdcrows ; k++) {
+                                        // reco-adc connecion
+                                        if (ahdc_adc_component[k] != ahdc_wire[j])
                                                 continue;
 
-                                        p_kftrack->SetXYZ(ahdc_kftrackpx[k], ahdc_kftrackpy[k], ahdc_kftrackpz[k]);
-
-                                        if (std::isnan(ahdc_kftrackpx[k]))
+                                        if (ahdc_adc_wfType[k] != 0)
                                                 continue;
 
-                                        if (p_kftrack->Theta() < theta_min)
-                                                continue;
-
-                                        if (std::abs(TMath::RadToDeg() * p_electron->DeltaPhi(*p_kftrack)) < 170.)
-                                                continue;
-
-                                        ntuple_elastics->Fill(ahdc_trackid[j], ahdc_kftrackid[k], ahdc_wire[j], ahdc_layer[j], ahdc_superlayer[j],
-                                                              ahdc_adc_sumadc[i], ahdc_adc_leadingEdgeTime[i], ahdc_adc_timeOverThreshold[i], ahdc_kftrackdedx[k], 
-                                                              ahdc_kftrackpath[k], p_electron->Pt(), electron_theta * TMath::RadToDeg(), Q2, W, p_electron->DeltaPhi(*p_kftrack) * TMath::RadToDeg());
-
-                                        p_kftrack->SetXYZ(-999,-999,-999);
+                                        ntuple_elastics->Fill(ahdc_trackid[j], ahdc_kftrackid[i], ahdc_wire[j], ahdc_layer[j], ahdc_superlayer[j],
+                                                              ahdc_adc_sumadc[k], ahdc_adc_leadingEdgeTime[k], ahdc_adc_timeOverThreshold[k], ahdc_kftrackdedx[i], 
+                                                              ahdc_kftrackpath[i], p_electron->Pt(), electron_theta * TMath::RadToDeg(), Q2, W, p_electron->DeltaPhi(*p_kftrack) * TMath::RadToDeg());
                                 }
                         }
                 }

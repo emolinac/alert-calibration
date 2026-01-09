@@ -27,22 +27,22 @@ void macro_create_wire_tot_histos()
         TGraphErrors* g_wire_tot_offset   = new TGraphErrors();
         TGraphErrors* g_wire_chisquarendf = new TGraphErrors();
 
-        TF1* fitf = new TF1("fitf", fitfunction, 400, 500, 5);
+        TF1* fitf = new TF1("fitf", fitfunction, 400, 600, 5);
         fitf->SetParameter(0, 0.01);  
         fitf->SetParameter(1, -0.00003);  
-        fitf->SetParameter(2, 0.25);  
+        fitf->SetParameter(2, 1);  
         fitf->SetParameter(3, 470);  
         fitf->SetParameter(4, 50);  
         
         fitf->SetParLimits(0, 0.005, 0.015); 
-        fitf->SetParLimits(1, -0.00009, -0.000005); 
-        fitf->SetParLimits(2, 0, 0.5);
+        fitf->SetParLimits(1, -0.00008, -0.00001); 
+        fitf->SetParLimits(2, 0, 3);
         fitf->SetParLimits(3, 400, 500);
         fitf->SetParLimits(4, 40, 60);
 
         int graph_point = 0;
 
-        for (int i = 1 ; i <= 3 ; i++) {
+        for (int i = 1 ; i <= 2 ; i++) {
                 for (int j = 1 ; j <= nlayers ; j++) {
                         TCut wire_cut = Form("ahdc_component==%i&&ahdc_superlayer==%i",i,j);
 
@@ -50,7 +50,7 @@ void macro_create_wire_tot_histos()
 
                         h_tot->Scale(1./h_tot->Integral());
 
-                        h_tot->Fit("fitf","WL R");
+                        h_tot->Fit("fitf","M");
 
                         if (fitf->GetChisquare() == 0 || fitf->GetNDF() == 0)
                                 continue;
@@ -59,10 +59,10 @@ void macro_create_wire_tot_histos()
                         h_tot->Write(Form("h_tot%i_%i",i,j));
                         gROOT->cd();
 
-                        g_wire_tot_offset->SetPoint(graph_point, graph_point, fitf->GetParameter(3));
+                        g_wire_tot_offset->SetPoint(graph_point, i, fitf->GetParameter(3));
                         g_wire_tot_offset->SetPointError(graph_point, 0, fitf->GetParError(3));
 
-                        g_wire_chisquarendf->SetPoint(graph_point, graph_point, fitf->GetChisquare()/fitf->GetNDF());
+                        g_wire_chisquarendf->SetPoint(graph_point, i, fitf->GetChisquare()/fitf->GetNDF());
                         g_wire_chisquarendf->SetPointError(graph_point, 0, 0);
 
                         graph_point++;
@@ -70,9 +70,6 @@ void macro_create_wire_tot_histos()
                         h_tot->Reset();
                 }
         }
-
-        g_wire_tot_offset->SetTitle(";wire;ToT Offset");
-        g_wire_tot_offset->SetTitle(";wire;#Chi^{2}_{ndf}");
 
         fout->cd();
         g_wire_tot_offset->Write("wire_tot_offset");
