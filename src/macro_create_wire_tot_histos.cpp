@@ -17,8 +17,8 @@ void macro_create_wire_tot_histos()
 {
         gStyle->SetOptFit(1);
 
-        TFile* f = new TFile("../output-files/ntuple_elastics_D2_022994_rdalgo.root");
-        TFile* fout = new TFile("../output-files/histos_wire_tot_chisquare.root","RECREATE");
+        TFile* f = new TFile("../output-files/ntuple_elastics_D2_022994.root");
+        TFile* fout = new TFile("../output-files/histos_wire_tot_chisquare-set3-allwires.root","RECREATE");
         gROOT->cd();
         
         TNtuple* ntuple_elastics = (TNtuple*) f->Get("ntuple_elastics");
@@ -34,15 +34,37 @@ void macro_create_wire_tot_histos()
         fitf->SetParameter(3, 470);  
         fitf->SetParameter(4, 50);  
         
-        fitf->SetParLimits(0, 0.005, 0.015); 
-        fitf->SetParLimits(1, -0.00009, -0.000005); 
+        // Nominal ranges
+        // fitf->SetParLimits(0, 0.005, 0.015); 
+        // fitf->SetParLimits(1, -0.00009, -0.000005); 
+        // fitf->SetParLimits(2, 0, 0.5);
+        // fitf->SetParLimits(3, 400, 500);
+        // fitf->SetParLimits(4, 40, 60);
+
+        // Set 1
+        // fitf->SetParLimits(0, 0.001, 0.025); 
+        // fitf->SetParLimits(1, -0.00009, -0.0000005); 
+        // fitf->SetParLimits(2, 0, 0.5);
+        // fitf->SetParLimits(3, 400, 500);
+        // fitf->SetParLimits(4, 30, 60);
+
+        // Set 2 (BEST ONE YET)
+        // fitf->SetParLimits(0, 0.001, 0.025); 
+        // fitf->SetParLimits(1, -0.0002, -0.0000001); 
+        // fitf->SetParLimits(2, 0, 0.5);
+        // fitf->SetParLimits(3, 400, 500);
+        // fitf->SetParLimits(4, 20, 70);
+
+        // Set 3
+        fitf->SetParLimits(0, 0.0001, 0.035); 
+        fitf->SetParLimits(1, -0.0002, -0.0000001); 
         fitf->SetParLimits(2, 0, 0.5);
         fitf->SetParLimits(3, 400, 500);
-        fitf->SetParLimits(4, 40, 60);
+        fitf->SetParLimits(4, 20, 70);
 
         int graph_point = 0;
 
-        for (int i = 1 ; i <= 20 ; i++) {
+        for (int i = 1 ; i <= nwires ; i++) {
                 for (int j = 1 ; j <= nlayers ; j++) {
                         TCut wire_cut = Form("ahdc_component==%i&&ahdc_superlayer==%i",i,j);
 
@@ -50,7 +72,7 @@ void macro_create_wire_tot_histos()
 
                         h_tot->Scale(1./h_tot->Integral());
 
-                        h_tot->Fit("fitf","R");
+                        h_tot->Fit("fitf","MR");
 
                         if (fitf->GetChisquare() == 0 || fitf->GetNDF() == 0)
                                 continue;
