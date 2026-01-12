@@ -3,7 +3,7 @@
 const int nwires = 100;
 const int nlayers = 5;
 
-TCut basic_cut  = Form("W<%f&&ahdc_kftrackpath*ahdc_kftrackdedx>3500",w_max);
+TCut basic_cut  = Form("W<%f&&ahdc_kftrackpath*ahdc_kftrackdedx>3000",w_max);
         
 double fitfunction (double* x, double* par)
 {
@@ -17,8 +17,8 @@ void macro_create_wire_tot_histos()
 {
         gStyle->SetOptFit(1);
 
-        TFile* f = new TFile("../output-files/ntuple_elastics_D2_022994.root");
-        TFile* fout = new TFile("../output-files/histos_wire_tot.root","RECREATE");
+        TFile* f = new TFile("../output-files/ntuple_elastics_D2_022994_rdalgo.root");
+        TFile* fout = new TFile("../output-files/histos_wire_tot_chisquare.root","RECREATE");
         gROOT->cd();
         
         TNtuple* ntuple_elastics = (TNtuple*) f->Get("ntuple_elastics");
@@ -42,7 +42,7 @@ void macro_create_wire_tot_histos()
 
         int graph_point = 0;
 
-        for (int i = 1 ; i <= 3 ; i++) {
+        for (int i = 1 ; i <= 20 ; i++) {
                 for (int j = 1 ; j <= nlayers ; j++) {
                         TCut wire_cut = Form("ahdc_component==%i&&ahdc_superlayer==%i",i,j);
 
@@ -50,7 +50,7 @@ void macro_create_wire_tot_histos()
 
                         h_tot->Scale(1./h_tot->Integral());
 
-                        h_tot->Fit("fitf","WL R");
+                        h_tot->Fit("fitf","R");
 
                         if (fitf->GetChisquare() == 0 || fitf->GetNDF() == 0)
                                 continue;
@@ -72,7 +72,7 @@ void macro_create_wire_tot_histos()
         }
 
         g_wire_tot_offset->SetTitle(";wire;ToT Offset");
-        g_wire_tot_offset->SetTitle(";wire;#Chi^{2}_{ndf}");
+        g_wire_chisquarendf->SetTitle(";wire;#Chi^{2}_{ndf}");
 
         fout->cd();
         g_wire_tot_offset->Write("wire_tot_offset");
