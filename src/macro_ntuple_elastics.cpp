@@ -6,7 +6,7 @@ void macro_ntuple_elastics()
         TFile* fout = new TFile("../output-files/ntuple_elastics_D2_022994.root","RECREATE");
         gROOT->cd();
 
-        TNtuple* ntuple_elastics = new TNtuple("ntuple_elastics","","ahdc_trackid:ahdc_kftrackid:ahdc_component:ahdc_layer:ahdc_superlayer:ahdc_sumadc:ahdc_leadingEdgeTime:ahdc_timeOverThreshold:ahdc_kftrackdedx:ahdc_kftrackpath:electron_pt:electron_theta:Q2:W:delta_phi");
+        TNtuple* ntuple_elastics = new TNtuple("ntuple_elastics","","ahdc_trackid:ahdc_kftrackid:ahdc_component:ahdc_layer:ahdc_superlayer:ahdc_sumadc:ahdc_leadingEdgeTime:ahdc_timeOverThreshold:ahdc_kftrackdedx:ahdc_kftrackpath:ahdc_adc_layer:electron_theta:Q2:W:delta_phi");
 
         TTree* clas12 = (TTree*) fin->Get("clas12");
 
@@ -146,11 +146,10 @@ void macro_ntuple_elastics()
 
                                         ntuple_elastics->Fill(ahdc_trackid[j], ahdc_kftrackid[i], ahdc_wire[j], ahdc_layer[j], ahdc_superlayer[j],
                                                               ahdc_adc_sumadc[k], ahdc_adc_leadingEdgeTime[k], ahdc_adc_timeOverThreshold[k], ahdc_kftrackdedx[i], 
-                                                              ahdc_kftrackpath[i], p_electron->Pt(), electron_theta * TMath::RadToDeg(), Q2, W, p_electron->DeltaPhi(*p_kftrack) * TMath::RadToDeg());
+                                                              ahdc_kftrackpath[i], ahdc_adc_layer[k], electron_theta * TMath::RadToDeg(), Q2, W, p_electron->DeltaPhi(*p_kftrack) * TMath::RadToDeg());
                                 }
                         }
                 }
-
                 p_electron->SetXYZ(-999,-999,-999);
         }
 

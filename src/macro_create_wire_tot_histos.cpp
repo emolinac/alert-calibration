@@ -63,7 +63,7 @@ void macro_create_wire_tot_histos()
         fitf->SetParLimits(4, 20, 70);
 
         int graph_point = 0;
-
+        
         for (int i = 1 ; i <= nwires ; i++) {
                 for (int j = 1 ; j <= nlayers ; j++) {
                         TCut wire_cut = Form("ahdc_component==%i&&ahdc_superlayer==%i",i,j);
