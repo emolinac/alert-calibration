@@ -1,8 +1,10 @@
 #include "../include/constants.h"
 
+TFile input_file_name = "../../input-files/022994/022994.root";
+
 void macro_ntuple_elastics()
 {        
-        TFile* fin  = new TFile("../../input-files/022994/022994.root");
+        TFile* fin  = new TFile(input_file_name.c_str());
         TFile* fout = new TFile("../output-files/ntuple_elastics_D2_022994.root","RECREATE");
         gROOT->cd();
 

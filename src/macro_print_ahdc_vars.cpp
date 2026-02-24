@@ -1,8 +1,14 @@
 #include "../include/constants.h"
 
+TString input_file_name = "../output-files/ntuple_elastics_D2_022994.root";
+
+TCut basic_cut  = Form("W<%f",w_max);
+TCut let_cut    = "ahdc_leadingEdgeTime>250";
+TCut adc_cut    = "ahdc_kftrackpath*ahdc_kftrackdedx>4000";
+        
 void macro_print_ahdc_vars()
 {
-        TFile* f = new TFile("../output-files/ntuple_elastics_D2_022994_rdalgo.root");
+        TFile* f = new TFile(input_file_name.c_str());
         
         TNtuple* ntuple_electron = (TNtuple*) f->Get("ntuple_electron");
         TNtuple* ntuple_elastics = (TNtuple*) f->Get("ntuple_elastics");
@@ -14,13 +20,6 @@ void macro_print_ahdc_vars()
         TH2F* h_adc_tot     = new TH2F("h_adc_tot"    ,"",150,0,1000,150,500,14000);
         TH2F* h_adc_let     = new TH2F("h_adc_let"    ,"",150,100,1000,150,500,14000);
         TH2F* h_tot_let     = new TH2F("h_tot_let"    ,"",150,100,1000,150,100,1000);
-
-        // TCut global_cut = Form("W<%f&&ahdc_trackid>0&&ahdc_kftrackpath*ahdc_kftrackdedx>4000&&ahdc_leadingEdgeTime<400&&ahdc_leadingEdgeTime>270&&(ahdc_timeOverThreshold<(800-ahdc_leadingEdgeTime))",w_max);
-        // TCut basic_cut  = Form("W<%f&&ahdc_trackid>0&&ahdc_leadingEdgeTime>100&&(ahdc_timeOverThreshold<(800-ahdc_leadingEdgeTime))",w_max);
-        TCut basic_cut  = Form("W<%f",w_max);
-        TCut let_cut    = "ahdc_leadingEdgeTime>250";
-        // TCut tot_cut    = "ahdc_timeOverThreshold>370&&ahdc_timeOverThreshold<550";
-        TCut adc_cut    = "ahdc_kftrackpath*ahdc_kftrackdedx>4000";
 
         ntuple_elastics->Project("h_tot"        , "ahdc_timeOverThreshold"                                  , basic_cut);
         ntuple_elastics->Project("h_ept_energy" , "ahdc_kftrackdedx:electron_pt"                            , basic_cut);

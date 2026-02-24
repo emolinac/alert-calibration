@@ -1,6 +1,8 @@
+TString input_file_name = "../output-files/ntuple_elastics_D2_022994.root";
+
 void macro_print_scattering_kinematics()
 {
-        TFile* f = new TFile("../output-files/ntuple_elastics_D2.root");
+        TFile* f = new TFile(input_file_name.c_str());
         
         TNtuple* ntuple = (TNtuple*) f->Get("ntuple_electron");
 

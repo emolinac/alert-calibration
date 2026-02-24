@@ -9,3 +9,7 @@ const double delta_phi_min = 170.; // between electron and KF track
 const double theta_min = 5. * TMath::DegToRad(); // clas12 acceptance
 const double w_max = 1.;
 
+const int nwires              = 100;
+const int nlayers_adc         = 8;
+const int layers[nlayers_adc] = {11, 21, 22, 31, 32, 41, 42, 51};
+
