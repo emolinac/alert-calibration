@@ -4,7 +4,7 @@ Simple macros to extract the ToT calibration factors from RG-L runs.
 ## Before starting
 Some details before starting:
 - The output directories specified in each macros should not be changed. 
-- The input directories can be modified in each macro according to where the input files are located. 
+- The input directory in `macro_ntuple_elastics.cpp` should be modified according to where the initial input file is located. 
 
 Regarding the base input files, it should be used those obtained [using this version of hipo converter](https://github.com/emolinac/hipo_alert).
 
