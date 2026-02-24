@@ -1,7 +1,7 @@
 # alert-calibration
 Simple macros to extract the ToT calibration factors from RG-L runs.
 
-## Before start
+## Before starting
 Some details before starting:
 - The output directories specified in each macros should not be changed. 
 - The input directories can be modified in each macro according to where the input files are located. 
