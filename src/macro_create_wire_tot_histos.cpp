@@ -2,7 +2,7 @@
 
 TCut basic_cut  = Form("W<%f&&ahdc_kftrackpath*ahdc_kftrackdedx>3000",w_max);
 
-TString input_file_name = "../output-files/ntuple_elastics_D2_022994.root";
+std::string input_file_name = "../output-files/ntuple_elastics_D2_022994.root";
 
 double fitfunction (double* x, double* par)
 {

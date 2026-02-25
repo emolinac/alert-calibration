@@ -1,5 +1,5 @@
 // Notice the use of relative path
-TString input_file_name = "../output-files/histos_wire_tot_chisquare-allwires.root";
+std::string input_file_name = "../output-files/histos_wire_tot_chisquare-allwires.root";
         
 void macro_create_table()
 {

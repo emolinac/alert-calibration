@@ -1,6 +1,6 @@
 #include "../include/constants.h"
 
-TString input_file_name = "../output-files/ntuple_elastics_D2_022994.root";
+std::string input_file_name = "../output-files/ntuple_elastics_D2_022994.root";
 
 TCut basic_cut  = Form("W<%f",w_max);
 TCut let_cut    = "ahdc_leadingEdgeTime>250";

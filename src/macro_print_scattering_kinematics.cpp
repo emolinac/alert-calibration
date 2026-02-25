@@ -1,4 +1,4 @@
-TString input_file_name = "../output-files/ntuple_elastics_D2_022994.root";
+std::string input_file_name = "../output-files/ntuple_elastics_D2_022994.root";
 
 void macro_print_scattering_kinematics()
 {
